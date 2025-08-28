@@ -1,11 +1,11 @@
 import axios from 'axios'
 
-const baseUrl = 'http://localhost:5000'
+const baseUrl = 'http://localhost:5000/api'
 
 export const createUser = ({ name, password }) => {
   axios({
     method: 'post',
-    url: `${baseUrl}/api/auth/register`,
+    url: `${baseUrl}/auth/register`,
     data: {
       name,
       password,
@@ -31,13 +31,17 @@ export const getUser = ({ auth }) => {
 }
 
 export const getToken = ({ auth, name, password }) => {
-  return axios.post(`${baseUrl}/token/`, {
-    name,
-    password,
+  return axios({
+    method: 'post',
+    url: `${baseUrl}/auth/login/`,
+    data: {
+      name,
+      password,
+    }
   })
     .then(response => {
       console.log('GET TOKEN RESPONSE: ', response)
-      auth.setAccessToken(response.data.access)
+      auth.setAccessToken(response.data.token)
     })
     .catch(error => console.log('ERROR: ', error))
 }

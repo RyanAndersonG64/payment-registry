@@ -1,25 +1,41 @@
-import { useState } from 'react'
+import { useState, useContext } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { AuthContext } from './contexts/AuthContext'
 import './App.css'
 import { createUser } from './api'
 
 function Register() {
-  const [count, setCount] = useState(0)
+  const { auth } = useContext(AuthContext)
+  const [name, setName] = useState("")
+  const [password, setPassword] = useState("")
+  const navigate = useNavigate()
 
   return (
-    <>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
+    <div>
+      <h1>Register</h1>
+      <form>
+        <input type="text" placeholder="Username" value={name} onChange={(e) => setName(e.target.value)} />
+        <br></br>
+        <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
+        <button
+          type="button"
+          onClick={() => {
+            console.log('REGISTER BUTTON CLICKED')
+            console.log(name, password)
+            createUser({ name, password })
+              .then(response => {
+                console.log('REGISTER RESPONSE: ', response)
+                navigate('/login')
+              })
+              .catch(error => {
+                console.log('ERROR: ', error)
+                alert('Error registering user')
+              })
+          }}
+        >
         </button>
-        <p>
-          Edit <code>src/Register.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+      </form>
+    </div>
   )
 }
 
