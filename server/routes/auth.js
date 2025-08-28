@@ -2,6 +2,7 @@ const express = require('express')
 const User = require('../models/User')
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcryptjs')
+const authMiddleware = require('../middleware/authMiddleware')
 
 const router = express.Router()
 
@@ -33,12 +34,42 @@ router.post('/login', async (req, res) => {
             return res.status(401).json({ error: 'Invalid credentials' })
         }
 
-        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET)
-        res.json({ token })
+        const expiresInSeconds = parseInt(process.env.JWT_EXPIRES_IN_SECONDS || '3600', 10)
+        const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: expiresInSeconds })
+
+        // Set httpOnly cookie
+        res.cookie('token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax',
+            maxAge: expiresInSeconds * 1000,
+        })
+        res.json({ user })
     } catch (error) {
         res.status(500).json({ error: error.message })
     }
 
+})
+
+//Logout
+router.post('/logout', async (req, res) => {
+    res.clearCookie('token', {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+    })
+    res.json({ message: 'Logged out' })
+})
+
+// Keep user logged in on refresh
+router.get('/me', authMiddleware, async (req, res) => {
+    try {
+        const user = await User.findById(req.userId)
+        if (!user) return res.status(404).json({ error: 'User not found' })
+        res.json({ user })
+    } catch (error) {
+        res.status(500).json({ error: error.message })
+    }
 })
 
 module.exports = router

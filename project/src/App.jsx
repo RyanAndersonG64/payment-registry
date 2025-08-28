@@ -1,24 +1,55 @@
-import { useState } from 'react'
+import { useState, useContext, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
+import { AuthContext } from './contexts/AuthContext'
+import { UserContext } from './contexts/UserContext'
 import './App.css'
+import { getUser, logout } from './api'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const { auth } = useContext(AuthContext)
+  const { userContext } = useContext(UserContext)
+  const [currentUser, setCurrentUser] = useState([])
+  const navigate = useNavigate()
+
+  useEffect(() => {
+    if (userContext.currentUser && (!Array.isArray(userContext.currentUser) || userContext.currentUser.length !== 0)) {
+      setCurrentUser(userContext.currentUser)
+      return
+    }
+
+    // Keep user logged in on refresh
+    getUser({ userContext })
+      .then((response) => {
+        if (response?.data?.user) {
+          userContext.setCurrentUser(response.data.user)
+          setCurrentUser(response.data.user)
+        } else {
+          navigate('/login')
+        }
+      })
+      .catch(() => {
+        navigate('/login')
+      })
+  }, [])
 
   return (
-    <>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
+    <div className='app'>
+      <div className='app-header'>
+        {currentUser.name}
+        <button onClick={() => {
+          logout({ userContext })
+            .then(() => {
+              navigate('/login')
+            })
+            .catch(() => {
+              alert('Error logging out')
+            })
+        }}>Logout</button>
       </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+      <div className='app-body'>
+        <h1>SOON MAY THE MONKEY BALL ROLL</h1>
+      </div>
+    </div>
   )
 }
 

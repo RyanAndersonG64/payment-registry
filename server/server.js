@@ -5,6 +5,7 @@ const mongoose = require('mongoose')
 const jwt = require('jsonwebtoken')
 const dotenv = require('dotenv')
 const cors = require('cors')
+const cookieParser = require('cookie-parser')
 
 // Models
 const User = require('./models/User')
@@ -25,6 +26,7 @@ mongoose
 app.use(express.json())
 const CLIENT_URL = process.env.CLIENT_URL || "http://localhost:5173"
 app.use(cors({ origin: CLIENT_URL, credentials: true }))
+app.use(cookieParser())
 
 // Routes
 app.use('/api/users', require('./routes/users'))

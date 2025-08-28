@@ -1,11 +1,13 @@
 import { useState, useContext } from 'react'
 import { AuthContext } from './contexts/AuthContext'
+import { UserContext } from './contexts/UserContext'
 import './App.css'
 import { getToken } from './api'
 import { useNavigate } from 'react-router-dom'
 
 function Login() {
   const { auth } = useContext(AuthContext)
+  const { userContext } = useContext(UserContext)
   const [name, setName] = useState("")
   const [password, setPassword] = useState("")
   const navigate = useNavigate()
@@ -22,10 +24,13 @@ function Login() {
           onClick={() => {
             console.log('LOGIN BUTTON CLICKED')
             console.log(name, password)
-            getToken({ auth, name, password })
+            getToken({ auth, userContext, name, password })
               .then(response => {
                 console.log('LOGIN RESPONSE: ', response)
-                navigate('/')
+                if (response.status === 200) {
+                  userContext.setCurrentUser(response.data.user)
+                  navigate('/')
+                }
               })
               .catch(error => {
                 console.log('ERROR: ', error)
@@ -33,6 +38,7 @@ function Login() {
               })
           }}
         >
+          Login
         </button>
       </form>
     </div>
