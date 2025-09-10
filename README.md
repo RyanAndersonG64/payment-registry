@@ -4,6 +4,11 @@
 
 cd payment-registry/server  
 mongod --dbpath=C:/data/db  
+
+
+In a separate shell:
+
+cd payment-registry/server  
 npm run dev  
 
 ## Start Frontend:

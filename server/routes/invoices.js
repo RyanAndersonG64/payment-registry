@@ -2,11 +2,10 @@ const express = require('express')
 const router = express.Router()
 const Invoice = require("../models/Invoice")
 
-// Create user
+// Create invoice
 router.post('/', async (req, res) => {
     try {
-
-        const createdInvoice = await Invoice.create({ ...req.body })
+        const createdInvoice = await Invoice.create({ ...req.body.invoice })
         res.status(201).json(createdInvoice)
     } catch (error) {
         res.status(400).json({ error: error.message })
@@ -16,8 +15,8 @@ router.post('/', async (req, res) => {
 // Get invoices
 router.get('/', async (req, res) => {
     try {
-        const invoices = await Invoice.find({ user: req.body.user })
-        res.json(invoices)
+        const invoices = await Invoice.find({ user: req.query.user })
+        res.json({ invoices })
     } catch (error) {
         res.status(500).json({ error: error.message })
     }
@@ -65,6 +64,6 @@ router.delete('/:invoiceId', async (req, res) => {
     } catch (error) {
         res.status(500).json({ error: error.message })
     }
-})  
+})
 
 module.exports = router

@@ -1,7 +1,9 @@
 import axios from 'axios'
-
 const baseUrl = 'http://localhost:5000/api'
 axios.defaults.withCredentials = true
+
+
+// User/Auth API
 
 export const createUser = ({ name, password }) => {
   axios({
@@ -13,7 +15,7 @@ export const createUser = ({ name, password }) => {
     }
   })
     .then(response => {
-      console.log('CREATE USER RESPONSE: ', response)
+     
     })
     .catch(error => console.log('ERROR: ', error))
 }
@@ -23,7 +25,7 @@ export const getUser = ({ userContext }) => {
     method: 'get',
     url: `${baseUrl}/auth/me/`,
   }).then(response => {
-    console.log('FETCH USER RESPONSE: ', response)
+    
     return response
   }).catch(error => console.log('ERROR: ', error))
 }
@@ -38,8 +40,7 @@ export const getToken = ({ auth, userContext, name, password }) => {
     }
   })
     .then(response => {
-      console.log('GET TOKEN RESPONSE: ', response)
-      // token is now in httpOnly cookie; no need to store
+
       userContext.setCurrentUser(response.data.user)
       return response
     })
@@ -52,7 +53,7 @@ export const logout = ({ userContext }) => {
     url: `${baseUrl}/auth/logout/`,
   })
     .then(response => {
-      console.log('LOGOUT RESPONSE: ', response)
+
       userContext.setCurrentUser([])
       return response
     })
@@ -60,6 +61,7 @@ export const logout = ({ userContext }) => {
 }
 
 
+// Invoice API
 
 export const createInvoice = ({ auth, invoice }) => {
   return axios({
@@ -67,7 +69,7 @@ export const createInvoice = ({ auth, invoice }) => {
     url: `${baseUrl}/invoices/`,
     data: {
       invoice: {
-        user: auth.user?._id,
+        user: invoice.user,
         number: invoice.number,
         amount: invoice.amount,
         paid: false,
@@ -84,6 +86,9 @@ export const getInvoices = ({ auth, user }) => {
   return axios({
     method: 'get',
     url: `${baseUrl}/invoices/`,
+    params: {
+      user,
+    }
   }).then(response => {
     console.log('GET INVOICES RESPONSE: ', response)
     return response

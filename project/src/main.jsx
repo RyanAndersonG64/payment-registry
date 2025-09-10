@@ -25,7 +25,7 @@ const AuthContextProvider = ({ children }) => {
 }
 
 const UserContextProvider = ({ children }) => {
-  const [currentUser, setCurrentUser] = useState([])
+  const [currentUser, setCurrentUser] = useState(null)
 
   const userContext = {
     currentUser,

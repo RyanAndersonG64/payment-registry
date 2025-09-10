@@ -22,11 +22,10 @@ function Login() {
         <button
           type="button"
           onClick={() => {
-            console.log('LOGIN BUTTON CLICKED')
-            console.log(name, password)
+
             getToken({ auth, userContext, name, password })
               .then(response => {
-                console.log('LOGIN RESPONSE: ', response)
+
                 if (response.status === 200) {
                   userContext.setCurrentUser(response.data.user)
                   navigate('/')
