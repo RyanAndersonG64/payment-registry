@@ -52,16 +52,15 @@ function App() {
     }
   }, [loading])
 
-  // Create Invoice
+
 
   // Update Invoice
 
-  // Delete Invoice
 
-  //TODO: Add a way to view the payment registry
-  //TODO: Add a way to add a payment to the registry
+
+
   //TODO: Add a way to edit a payment in the registry
-  //TODO: Add a way to delete a payment from the registry
+
 
 
   return (
@@ -95,13 +94,29 @@ function App() {
                 {invoice.paid ? 'Mark as Unpaid' : 'Mark as Paid'}
               </button>
               <button onClick={() => {
-                deleteInvoice({ auth, invoice: { _id: invoice._id } })
+                if (confirm('Are you sure you want to delete this invoice?')) {
+                  deleteInvoice({ auth, invoice: { _id: invoice._id } })
+                    .then(() => {
+                      getInvoices({ auth, user: currentUser._id })
+                        .then((response) => {
+                          setInvoices(response.data.invoices)
+                        })
+                        .catch(() => {
+                          alert('Error getting invoices')
+                        })
+                    })
+                    .catch(() => {
+                      alert('Error deleting invoice')
+                    })
+                }
               }}>
                 Delete
               </button>
             </div>
           ))}
         </div>
+        <br></br><br></br>
+        {/* create invoice button */}
         <button onClick={() => {
           const newNumberInput = prompt('Enter invoice number')
           const newNumber = Number(newNumberInput)
@@ -141,7 +156,13 @@ function App() {
 
           createInvoice({ auth, invoice: { user: currentUser._id, number: newNumber, amount: newAmount } })
             .then(() => {
-              console.log('Invoice created')
+              getInvoices({ auth, user: currentUser._id })
+                .then((response) => {
+                  setInvoices(response.data.invoices)
+                })
+                .catch(() => {
+                  alert('Error getting invoices')
+                })
             })
             .catch(() => {
               alert('Error creating invoice')
