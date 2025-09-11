@@ -103,28 +103,34 @@ function App() {
           ))}
         </div>
         <button onClick={() => {
-          const newNumber = prompt('Enter invoice number')
+          const newNumberInput = prompt('Enter invoice number')
+          const newNumber = Number(newNumberInput)
+
           // check if newNumber is a number
           if (isNaN(newNumber)) {
             alert('Invoice number must be a number')
             return
           }
+
           // check if newNumber is a positive whole number
           if (newNumber % 1 !== 0 || newNumber < 0) {
             alert('Invoice number must be a positive whole number')
             return
           }
+
           // check if an invoice with this number and user already exists
-          const existingInvoice = invoices.find(invoice => invoice.number === newNumber && invoice.user === currentUser._id)
+          const existingInvoice = invoices.find(invoice => invoice.number === newNumber)
+          console.log(existingInvoice)
           if (existingInvoice) {
             alert('Invoice with this number already exists')
             return
           }
 
-          const newAmount = prompt('Enter invoice amount')
+          const newAmountInput = prompt('Enter invoice amount')
+          const newAmount = Number(newAmountInput)
           // check if newAmount is a positive number
           if (isNaN(newAmount) || newAmount <= 0) {
-            alert('Invoice amount must be a positivenumber')
+            alert('Invoice amount must be a positive number')
             return
           }
           // check if newAmount has two decimal places
