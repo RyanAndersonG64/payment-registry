@@ -38,12 +38,12 @@ router.patch('/:invoiceId', async (req, res) => {
         }
 
         if (updates.paid === true) {
-            invoiceToUpdate.paid = updates.paid
+            invoiceToUpdate.paid = true
             invoiceToUpdate.paidDate = new Date()
         }
 
         if (updates.paid === false) {
-            invoiceToUpdate.paid = updates.paid
+            invoiceToUpdate.paid = false
             invoiceToUpdate.paidDate = null
         }
 

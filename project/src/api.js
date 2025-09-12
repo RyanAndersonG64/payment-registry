@@ -99,9 +99,7 @@ export const updateInvoice = ({ auth, invoice }) => {
   return axios({
     method: 'patch',
     url: `${baseUrl}/invoices/${invoice._id}`,
-    data: {
-      invoice
-    }
+    data: invoice
   }).then(response => {
     console.log('UPDATE INVOICE RESPONSE: ', response)
     return response

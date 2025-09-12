@@ -6,13 +6,17 @@ import './App.css'
 import { getUser, logout, getInvoices, createInvoice, updateInvoice, deleteInvoice } from './api'
 
 function App() {
+  const navigate = useNavigate()
   const { auth } = useContext(AuthContext)
   const { userContext } = useContext(UserContext)
+
   const [currentUser, setCurrentUser] = useState(userContext.currentUser)
   const [invoices, setInvoices] = useState([])
   const [loading, setLoading] = useState(true)
 
-  const navigate = useNavigate()
+  const [numberToUpdate, setNumberToUpdate] = useState('')
+  const [amountToUpdate, setAmountToUpdate] = useState('')
+
 
   useEffect(() => {
     if (userContext.currentUser) {
@@ -55,7 +59,7 @@ function App() {
 
 
   // Update Invoice
-  function updateInvoice(invoice) {
+  function sendInvoiceUpdate(invoice) {
     updateInvoice({ auth, invoice })
       .then(() => {
         getInvoices({ auth, user: currentUser._id })
@@ -64,6 +68,7 @@ function App() {
           })
       })
   }
+
 
 
 
@@ -93,17 +98,79 @@ function App() {
         <div className='invoices'>
           {invoices.map(invoice => (
             <div key={invoice._id} className='invoice-cell' style={{ color: invoice.paid ? 'green' : 'red' }}>
-              <h2>{invoice.number}</h2>
-              <p>{invoice.amount}</p>
-              <p>{invoice.paidDate ? invoice.paidDate.toLocaleDateString() : ''}</p>
+              <input type='text'
+                defaultValue={invoice.number}
+                onChange={(e) => {
+                  setNumberToUpdate(e.target.value)
+                }}
+
+                // on blur or enter, check if numberToUpdate is a positive whole number and send the update
+                onBlur={(e) => {
+
+                  if (numberToUpdate === '') {
+                    e.target.value = invoice.number
+                    return
+                  }
+
+                  if (isNaN(numberToUpdate) || numberToUpdate % 1 !== 0 || numberToUpdate < 0) {
+                    alert('Number must be a positive whole number')
+                    e.target.value = invoice.number
+                    setNumberToUpdate('')
+                    return
+                  }
+
+                  if (numberToUpdate === invoice.number) {
+                    return
+                  }
+
+                  const existingInvoice = invoices.find(invoice => invoice.number === numberToUpdate)
+                  if (existingInvoice) {
+                    alert('Number already in use')
+                    return
+                  }
+                  if (numberToUpdate !== '') {
+                    sendInvoiceUpdate({ _id: invoice._id, number: numberToUpdate })
+                    setNumberToUpdate('')
+                  }
+                }}
+                
+                onKeyDown={(e) => {
+                  if (e.key === 'Enter') {
+
+                    if (numberToUpdate === '') {
+                      e.target.value = invoice.number
+                      return
+                    }
+
+                    if (isNaN(numberToUpdate) || numberToUpdate % 1 !== 0 || numberToUpdate < 0) {
+                      alert('Number must be a positive whole number')
+                      e.target.value = invoice.number
+                      setNumberToUpdate('')
+                      return
+                    }
+
+
+                    if (numberToUpdate === invoice.number) {
+                      return
+                    }
+                    const existingInvoice = invoices.find(invoice => invoice.number === numberToUpdate)
+                    if (existingInvoice) {
+                      alert('Number already in use')
+                      return
+                    }
+                    sendInvoiceUpdate({ _id: invoice._id, number: numberToUpdate })
+                  }
+                }}
+                onKeyUp={(e) => {
+                  if (e.key === 'Enter') {
+                    setNumberToUpdate('')
+                  }
+                }}
+              />
+              <p>{'$' + invoice.amount}</p>
+              <p>{invoice.paidDate ? `Paid on ${new Date(invoice.paidDate).toLocaleString().split(',')[0]}` : ''}</p>
               <button onClick={() => {
-                updateInvoice({ auth, invoice: { _id: invoice._id, paid: !invoice.paid } })
-                  .then(() => {
-                    getInvoices({ auth, user: currentUser._id })
-                      .then((response) => {
-                        setInvoices(response.data.invoices)
-                      })
-                  })
+                sendInvoiceUpdate({ _id: invoice._id, paid: !invoice.paid })
               }}>
                 {invoice.paid ? 'Mark as Unpaid' : 'Mark as Paid'}
               </button>
