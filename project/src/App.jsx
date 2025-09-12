@@ -55,7 +55,15 @@ function App() {
 
 
   // Update Invoice
-
+  function updateInvoice(invoice) {
+    updateInvoice({ auth, invoice })
+      .then(() => {
+        getInvoices({ auth, user: currentUser._id })
+          .then((response) => {
+            setInvoices(response.data.invoices)
+          })
+      })
+  }
 
 
 
@@ -90,6 +98,12 @@ function App() {
               <p>{invoice.paidDate ? invoice.paidDate.toLocaleDateString() : ''}</p>
               <button onClick={() => {
                 updateInvoice({ auth, invoice: { _id: invoice._id, paid: !invoice.paid } })
+                  .then(() => {
+                    getInvoices({ auth, user: currentUser._id })
+                      .then((response) => {
+                        setInvoices(response.data.invoices)
+                      })
+                  })
               }}>
                 {invoice.paid ? 'Mark as Unpaid' : 'Mark as Paid'}
               </button>
