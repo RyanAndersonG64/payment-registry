@@ -96,10 +96,12 @@ function App() {
       <div className='app-body'>
         <h1>Invoices</h1>
         <div className='invoices'>
-          {invoices.map(invoice => (
+          {invoices.sort((a, b) => a.number - b.number).map(invoice => (
             <div key={invoice._id} className='invoice-cell' style={{ color: invoice.paid ? 'green' : 'red' }}>
-              <input type='text'
+              <input type='number'
                 defaultValue={invoice.number}
+
+                //update invoice number
                 onChange={(e) => {
                   setNumberToUpdate(e.target.value)
                 }}
@@ -128,12 +130,13 @@ function App() {
                     alert('Number already in use')
                     return
                   }
+
                   if (numberToUpdate !== '') {
                     sendInvoiceUpdate({ _id: invoice._id, number: numberToUpdate })
                     setNumberToUpdate('')
                   }
                 }}
-                
+
                 onKeyDown={(e) => {
                   if (e.key === 'Enter') {
 
@@ -167,10 +170,45 @@ function App() {
                   }
                 }}
               />
-              <p>{'$' + invoice.amount}</p>
+              &nbsp;&nbsp;
+              $
+              <input type='number'
+                defaultValue={invoice.amount}
+
+                //update invoice amount
+                onChange={(e) => {
+                  setAmountToUpdate(e.target.value)
+                }}
+                onBlur={(e) => {
+                  if (amountToUpdate === '') {
+                    e.target.value = invoice.amount
+                    return
+                  }
+
+                  // check if amountToUpdate is a positive number with 2 decimal places
+                  if (isNaN(amountToUpdate) || amountToUpdate < 0 || amountToUpdate.toString().split('.')[1]?.length !== 2) {
+                    alert('Amount must be a positive number with 2 decimal places')
+                    e.target.value = invoice.amount
+                    setAmountToUpdate('')
+                    return
+                  }
+
+                  if (amountToUpdate === invoice.amount) {
+                    return
+                  }
+
+
+                  if (amountToUpdate !== '') {
+                    sendInvoiceUpdate({ _id: invoice._id, amount: amountToUpdate })
+                    setAmountToUpdate('')
+                  }
+                }}
+              />
               <p>{invoice.paidDate ? `Paid on ${new Date(invoice.paidDate).toLocaleString().split(',')[0]}` : ''}</p>
               <button onClick={() => {
-                sendInvoiceUpdate({ _id: invoice._id, paid: !invoice.paid })
+                if (confirm('Are you sure you want to update this invoice payment status?')) {
+                  sendInvoiceUpdate({ _id: invoice._id, paid: !invoice.paid })
+                }
               }}>
                 {invoice.paid ? 'Mark as Unpaid' : 'Mark as Paid'}
               </button>
@@ -193,6 +231,8 @@ function App() {
               }}>
                 Delete
               </button>
+              <br></br>
+              <br></br>
             </div>
           ))}
         </div>
@@ -216,7 +256,6 @@ function App() {
 
           // check if an invoice with this number and user already exists
           const existingInvoice = invoices.find(invoice => invoice.number === newNumber)
-          console.log(existingInvoice)
           if (existingInvoice) {
             alert('Invoice with this number already exists')
             return
@@ -251,6 +290,22 @@ function App() {
         }}>
           Create Invoice
         </button>
+      </div>
+      <div id = 'payment record'>
+        <h3>Payment Record</h3>
+        {/* map of paid invoices by paidDate */}
+        {invoices.filter(invoice => invoice.paid).map(invoice => (
+          <p key={invoice._id}>
+            {invoice.paidDate ? ` ${new Date(invoice.paidDate).toLocaleString().split(',')[0]}: ${invoice.number}` : ''}
+          </p>
+        ))}
+        <h4>
+          Total Amount Paid: ${invoices.filter(invoice => invoice.paid).reduce((acc, invoice) => acc + invoice.amount, 0).toFixed(2)}
+        </h4>
+        <h4>
+          {/* sum of all invoices that are not paid */}
+          Total Amount Due: ${invoices.filter(invoice => !invoice.paid).reduce((acc, invoice) => acc + invoice.amount, 0)}
+        </h4>
       </div>
     </div>
   )

@@ -8,6 +8,7 @@ const invoiceSchema = new mongoose.Schema({
     number: {
         type: Number,
         required: true,
+        unique: true,
     },
     amount: {
         type: Number,

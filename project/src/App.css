@@ -6,7 +6,9 @@
 }
 
 .app {
-  background-color: black;
+  background-color: white;
+  overflow-y: auto;
+  border: 1px solid red;
 }
 
 .app-body {
@@ -16,4 +18,33 @@
 .app-header {
   height: 5vh;
   background-color: green;
+}
+
+.invoice-cell {
+  border: 1px solid black;
+  padding: 10px;
+  width: fit-content;
+  /* center the invoice-cell */
+  margin: 0 auto;
+}
+
+.invoice-cell input {
+  width: 100px;
+  text-align: center;
+  margin: 0 10px;
+  border: 1px solid black;
+  padding: 5px;
+  border-radius: 5px;
+}
+
+.invoice-cell input:focus {
+  outline: none;
+}
+
+#payment-record {
+  border: 1px solid black;
+  padding: 10px;
+  width: fit-content;
+  /* center the payment-record */
+  margin: 0 auto;
 }
