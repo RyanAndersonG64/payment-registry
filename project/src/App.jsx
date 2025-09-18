@@ -14,6 +14,7 @@ function App() {
   const [invoices, setInvoices] = useState([])
   const [loading, setLoading] = useState(true)
 
+  const [invoiceToSearch, setInvoiceToSearch] = useState(-1)
   const [numberToUpdate, setNumberToUpdate] = useState('')
   const [amountToUpdate, setAmountToUpdate] = useState('')
 
@@ -95,8 +96,21 @@ function App() {
       </div>
       <div className='app-body'>
         <h1>Invoices</h1>
+        <input type='number'
+          placeholder='Search invoice number'
+          onChange={(e) => {
+            setInvoiceToSearch(Number(e.target.value))
+          }}
+        />
+        <br></br><br></br>
         <div className='invoices'>
-          {invoices.sort((a, b) => a.number - b.number).map(invoice => (
+          {(invoiceToSearch && invoices.find(invoice => invoice.number === invoiceToSearch)) ? 
+          <div key={invoices.find(invoice => invoice.number === invoiceToSearch)._id} className='invoice-cell' style={{ color: invoices.find(invoice => invoice.number === invoiceToSearch).paid ? 'green' : 'red' }}>
+            <input type='number'
+              defaultValue={invoices.find(invoice => invoice.number === invoiceToSearch).number}
+            />
+          </div>
+          : invoices.sort((a, b) => a.number - b.number).map(invoice => (
             <div key={invoice._id} className='invoice-cell' style={{ color: invoice.paid ? 'green' : 'red' }}>
               <input type='number'
                 defaultValue={invoice.number}
@@ -291,7 +305,7 @@ function App() {
           Create Invoice
         </button>
       </div>
-      <div id = 'payment record'>
+      <div id='payment record'>
         <h3>Payment Record</h3>
         {/* map of paid invoices by paidDate */}
         {invoices.filter(invoice => invoice.paid).map(invoice => (
