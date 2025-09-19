@@ -21,6 +21,7 @@ function App() {
   const [invoiceToSearch, setInvoiceToSearch] = useState(-1)
 
   const [Dates, setDates] = useState([])
+  const [filter, setFilter] = useState('all')
 
 
   useEffect(() => {
@@ -61,7 +62,6 @@ function App() {
             }
           })
           setDates(paidDates)
-          console.log(paidDates)
         })
         .catch(() => {
           alert('Error getting invoices')
@@ -104,6 +104,25 @@ function App() {
 
       <div className='app-body'>
         <h1>Invoices</h1>
+
+        <select onChange={(e) => {
+          setFilter(e.target.value)
+          setInvoiceToSearch(-1)
+        }}>
+
+          <option value='all'>
+            All
+          </option>
+          <option value='paid'>
+            Paid
+          </option>
+          <option value='unpaid'>
+            Unpaid
+          </option>
+        </select>
+
+        <br></br><br></br>
+
         {/* invoice number search bar */}
         <input type='number'
           placeholder='Search invoice number'
@@ -115,13 +134,29 @@ function App() {
 
         {/* displayed invoices */}
         <div className='invoices'>
+
+          {/* if invoiceToSearch is set, display the invoice with that number */}
           {(invoiceToSearch && invoices.find(invoice => invoice.number === invoiceToSearch)) ?
             <InvoiceDiv invoice={invoices.find(invoice => invoice.number === invoiceToSearch)} refreshInvoices={refreshInvoices} key={invoices.find(invoice => invoice.number === invoiceToSearch)._id} />
-            : invoices.sort((a, b) => a.number - b.number).map(invoice => (
+
+            // if filter is set to all, display all invoices
+            : filter === 'all' ? invoices.sort((a, b) => a.number - b.number).map(invoice => (
               <InvoiceDiv invoice={invoice} refreshInvoices={refreshInvoices} key={invoice._id} />
-            ))}
+            ))
+
+              // if filter is set to paid, display all paid invoices
+              : filter === 'paid' ? invoices.filter(invoice => invoice.paid).sort((a, b) => a.number - b.number).map(invoice => (
+                <InvoiceDiv invoice={invoice} refreshInvoices={refreshInvoices} key={invoice._id} />
+              ))
+
+                // if filter is set to unpaid, display all unpaid invoices
+                : invoices.filter(invoice => !invoice.paid).sort((a, b) => a.number - b.number).map(invoice => (
+                  <InvoiceDiv invoice={invoice} refreshInvoices={refreshInvoices} key={invoice._id} />
+                ))}
         </div>
+
         <br></br><br></br>
+
         {/* create invoice button */}
         <button onClick={() => {
           const newNumberInput = prompt('Enter invoice number')
@@ -189,7 +224,7 @@ function App() {
         </h4>
         <h4>
           {/* sum of all invoices that are not paid */}
-          Total Amount Due: ${invoices.filter(invoice => !invoice.paid).reduce((acc, invoice) => acc + invoice.amount, 0)}
+          Total Amount Due: ${invoices.filter(invoice => !invoice.paid).reduce((acc, invoice) => acc + invoice.amount, 0).toFixed(2)}
         </h4>
       </div>
 
