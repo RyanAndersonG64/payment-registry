@@ -1,8 +1,12 @@
 import { useState, useContext, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+
 import { AuthContext } from './contexts/AuthContext'
 import { UserContext } from './contexts/UserContext'
+
+import InvoiceDiv from './components/InvoiceDiv'
 import './App.css'
+
 import { getUser, logout, getInvoices, createInvoice, updateInvoice, deleteInvoice } from './api'
 
 function App() {
@@ -59,16 +63,7 @@ function App() {
 
 
 
-  // Update Invoice
-  function sendInvoiceUpdate(invoice) {
-    updateInvoice({ auth, invoice })
-      .then(() => {
-        getInvoices({ auth, user: currentUser._id })
-          .then((response) => {
-            setInvoices(response.data.invoices)
-          })
-      })
-  }
+
 
 
 
@@ -104,151 +99,11 @@ function App() {
         />
         <br></br><br></br>
         <div className='invoices'>
-          {(invoiceToSearch && invoices.find(invoice => invoice.number === invoiceToSearch)) ? 
-          <div key={invoices.find(invoice => invoice.number === invoiceToSearch)._id} className='invoice-cell' style={{ color: invoices.find(invoice => invoice.number === invoiceToSearch).paid ? 'green' : 'red' }}>
-            <input type='number'
-              defaultValue={invoices.find(invoice => invoice.number === invoiceToSearch).number}
-            />
-          </div>
-          : invoices.sort((a, b) => a.number - b.number).map(invoice => (
-            <div key={invoice._id} className='invoice-cell' style={{ color: invoice.paid ? 'green' : 'red' }}>
-              <input type='number'
-                defaultValue={invoice.number}
-
-                //update invoice number
-                onChange={(e) => {
-                  setNumberToUpdate(e.target.value)
-                }}
-
-                // on blur or enter, check if numberToUpdate is a positive whole number and send the update
-                onBlur={(e) => {
-
-                  if (numberToUpdate === '') {
-                    e.target.value = invoice.number
-                    return
-                  }
-
-                  if (isNaN(numberToUpdate) || numberToUpdate % 1 !== 0 || numberToUpdate < 0) {
-                    alert('Number must be a positive whole number')
-                    e.target.value = invoice.number
-                    setNumberToUpdate('')
-                    return
-                  }
-
-                  if (numberToUpdate === invoice.number) {
-                    return
-                  }
-
-                  const existingInvoice = invoices.find(invoice => invoice.number === numberToUpdate)
-                  if (existingInvoice) {
-                    alert('Number already in use')
-                    return
-                  }
-
-                  if (numberToUpdate !== '') {
-                    sendInvoiceUpdate({ _id: invoice._id, number: numberToUpdate })
-                    setNumberToUpdate('')
-                  }
-                }}
-
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') {
-
-                    if (numberToUpdate === '') {
-                      e.target.value = invoice.number
-                      return
-                    }
-
-                    if (isNaN(numberToUpdate) || numberToUpdate % 1 !== 0 || numberToUpdate < 0) {
-                      alert('Number must be a positive whole number')
-                      e.target.value = invoice.number
-                      setNumberToUpdate('')
-                      return
-                    }
-
-
-                    if (numberToUpdate === invoice.number) {
-                      return
-                    }
-                    const existingInvoice = invoices.find(invoice => invoice.number === numberToUpdate)
-                    if (existingInvoice) {
-                      alert('Number already in use')
-                      return
-                    }
-                    sendInvoiceUpdate({ _id: invoice._id, number: numberToUpdate })
-                  }
-                }}
-                onKeyUp={(e) => {
-                  if (e.key === 'Enter') {
-                    setNumberToUpdate('')
-                  }
-                }}
-              />
-              &nbsp;&nbsp;
-              $
-              <input type='number'
-                defaultValue={invoice.amount}
-
-                //update invoice amount
-                onChange={(e) => {
-                  setAmountToUpdate(e.target.value)
-                }}
-                onBlur={(e) => {
-                  if (amountToUpdate === '') {
-                    e.target.value = invoice.amount
-                    return
-                  }
-
-                  // check if amountToUpdate is a positive number with 2 decimal places
-                  if (isNaN(amountToUpdate) || amountToUpdate < 0 || amountToUpdate.toString().split('.')[1]?.length !== 2) {
-                    alert('Amount must be a positive number with 2 decimal places')
-                    e.target.value = invoice.amount
-                    setAmountToUpdate('')
-                    return
-                  }
-
-                  if (amountToUpdate === invoice.amount) {
-                    return
-                  }
-
-
-                  if (amountToUpdate !== '') {
-                    sendInvoiceUpdate({ _id: invoice._id, amount: amountToUpdate })
-                    setAmountToUpdate('')
-                  }
-                }}
-              />
-              <p>{invoice.paidDate ? `Paid on ${new Date(invoice.paidDate).toLocaleString().split(',')[0]}` : ''}</p>
-              <button onClick={() => {
-                if (confirm('Are you sure you want to update this invoice payment status?')) {
-                  sendInvoiceUpdate({ _id: invoice._id, paid: !invoice.paid })
-                }
-              }}>
-                {invoice.paid ? 'Mark as Unpaid' : 'Mark as Paid'}
-              </button>
-              <button onClick={() => {
-                if (confirm('Are you sure you want to delete this invoice?')) {
-                  deleteInvoice({ auth, invoice: { _id: invoice._id } })
-                    .then(() => {
-                      getInvoices({ auth, user: currentUser._id })
-                        .then((response) => {
-                          setInvoices(response.data.invoices)
-                        })
-                        .catch(() => {
-                          alert('Error getting invoices')
-                        })
-                    })
-                    .catch(() => {
-                      alert('Error deleting invoice')
-                    })
-                }
-              }}>
-                Delete
-              </button>
-              <br></br>
-              <br></br>
-            </div>
-          ))}
+          {(invoiceToSearch && invoices.find(invoice => invoice.number === invoiceToSearch)) ?
+            <InvoiceDiv invoice={invoices.find(invoice => invoice.number === invoiceToSearch)} key={invoices.find(invoice => invoice.number === invoiceToSearch)._id} />
+            : invoices.sort((a, b) => a.number - b.number).map(invoice => (
+              <InvoiceDiv invoice={invoice} key={invoice._id} />
+            ))}
         </div>
         <br></br><br></br>
         {/* create invoice button */}
