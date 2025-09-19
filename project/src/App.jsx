@@ -7,7 +7,7 @@ import { UserContext } from './contexts/UserContext'
 import InvoiceDiv from './components/InvoiceDiv'
 import './App.css'
 
-import { getUser, logout, getInvoices, createInvoice, updateInvoice, deleteInvoice } from './api'
+import { getUser, logout, getInvoices, createInvoice } from './api'
 
 function App() {
   const navigate = useNavigate()
@@ -19,8 +19,6 @@ function App() {
   const [loading, setLoading] = useState(true)
 
   const [invoiceToSearch, setInvoiceToSearch] = useState(-1)
-  const [numberToUpdate, setNumberToUpdate] = useState('')
-  const [amountToUpdate, setAmountToUpdate] = useState('')
 
 
   useEffect(() => {
@@ -75,17 +73,9 @@ function App() {
 
 
 
-
-
-
-
-
-
-
-
-
   return (
     <div className='app'>
+
       <div className='app-header'>
         {currentUser?.name || ''}
         <button onClick={() => {
@@ -101,8 +91,10 @@ function App() {
           Logout
         </button>
       </div>
+
       <div className='app-body'>
         <h1>Invoices</h1>
+        {/* invoice number search bar */}
         <input type='number'
           placeholder='Search invoice number'
           onChange={(e) => {
@@ -110,6 +102,8 @@ function App() {
           }}
         />
         <br></br><br></br>
+
+        {/* displayed invoices */}
         <div className='invoices'>
           {(invoiceToSearch && invoices.find(invoice => invoice.number === invoiceToSearch)) ?
             <InvoiceDiv invoice={invoices.find(invoice => invoice.number === invoiceToSearch)} refreshInvoices={refreshInvoices} key={invoices.find(invoice => invoice.number === invoiceToSearch)._id} />
@@ -172,8 +166,9 @@ function App() {
           Create Invoice
         </button>
       </div>
+
       <div id='payment record'>
-        <h3>Payment Record</h3>
+        <h3>Payment History</h3>
         {/* map of paid invoices by paidDate */}
         {invoices.filter(invoice => invoice.paid).map(invoice => (
           <p key={invoice._id}>
@@ -188,6 +183,7 @@ function App() {
           Total Amount Due: ${invoices.filter(invoice => !invoice.paid).reduce((acc, invoice) => acc + invoice.amount, 0)}
         </h4>
       </div>
+
     </div>
   )
 }

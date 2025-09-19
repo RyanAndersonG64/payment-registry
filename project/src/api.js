@@ -90,7 +90,6 @@ export const getInvoices = ({ auth, user }) => {
       user,
     }
   }).then(response => {
-    console.log('GET INVOICES RESPONSE: ', response)
     return response
   }).catch(error => console.log('ERROR: ', error))
 }
