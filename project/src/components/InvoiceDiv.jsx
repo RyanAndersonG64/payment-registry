@@ -22,11 +22,15 @@ function InvoiceDiv(invoice) {
     function sendInvoiceUpdate(invoiceToUpdate) {
         updateInvoice({ auth, invoice: invoiceToUpdate })
             .then(() => {
-                getInvoices({ auth, user: currentUser._id })
-                    .then((response) => {
-                        setInvoices(response.data.invoices)
-                        setThisInvoice(response.data.invoices.find(invoice => invoice._id === invoiceToUpdate._id))
-                    })
+                if (invoice.refreshInvoices) {
+                    invoice.refreshInvoices()
+                } else {
+                    getInvoices({ auth, user: currentUser._id })
+                        .then((response) => {
+                            setInvoices(response.data.invoices)
+                            setThisInvoice(response.data.invoices.find(invoice => invoice._id === invoiceToUpdate._id))
+                        })
+                }
             })
     }
 
@@ -150,13 +154,17 @@ function InvoiceDiv(invoice) {
                 if (confirm('Are you sure you want to delete this invoice?')) {
                     deleteInvoice({ auth, invoice: { _id: thisInvoice._id } })
                         .then(() => {
-                            getInvoices({ auth, user: currentUser._id })
-                                .then((response) => {
-                                    setInvoices(response.data.invoices)
-                                })
-                                .catch(() => {
-                                    alert('Error getting invoices')
-                                })
+                            if (invoice.refreshInvoices) {
+                                invoice.refreshInvoices()
+                            } else {
+                                getInvoices({ auth, user: currentUser._id })
+                                    .then((response) => {
+                                        setInvoices(response.data.invoices)
+                                    })
+                                    .catch(() => {
+                                        alert('Error getting invoices')
+                                    })
+                            }
                         })
                         .catch(() => {
                             alert('Error deleting invoice')

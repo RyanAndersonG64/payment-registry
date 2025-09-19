@@ -61,6 +61,17 @@ function App() {
     }
   }, [loading])
 
+  // helper to allow children to trigger a refresh
+  const refreshInvoices = () => {
+    if (!currentUser || !currentUser._id) return
+    getInvoices({ auth, user: currentUser._id })
+      .then((response) => {
+        setInvoices(response.data.invoices)
+      })
+      .catch(() => {
+        alert('Error getting invoices')
+      })
+  }
 
 
 
@@ -68,7 +79,8 @@ function App() {
 
 
 
-  //TODO: Add a way to edit a payment in the registry
+
+
 
 
 
@@ -100,9 +112,9 @@ function App() {
         <br></br><br></br>
         <div className='invoices'>
           {(invoiceToSearch && invoices.find(invoice => invoice.number === invoiceToSearch)) ?
-            <InvoiceDiv invoice={invoices.find(invoice => invoice.number === invoiceToSearch)} key={invoices.find(invoice => invoice.number === invoiceToSearch)._id} />
+            <InvoiceDiv invoice={invoices.find(invoice => invoice.number === invoiceToSearch)} refreshInvoices={refreshInvoices} key={invoices.find(invoice => invoice.number === invoiceToSearch)._id} />
             : invoices.sort((a, b) => a.number - b.number).map(invoice => (
-              <InvoiceDiv invoice={invoice} key={invoice._id} />
+              <InvoiceDiv invoice={invoice} refreshInvoices={refreshInvoices} key={invoice._id} />
             ))}
         </div>
         <br></br><br></br>
