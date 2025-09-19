@@ -33,6 +33,7 @@ function Register() {
               })
           }}
         >
+          Create Account
         </button>
       </form>
     </div>

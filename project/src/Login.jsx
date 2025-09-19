@@ -40,6 +40,8 @@ function Login() {
           Login
         </button>
       </form>
+      <br></br>
+      <a href="/register">Register</a>
     </div>
   )
 }
