@@ -14,11 +14,13 @@ function App() {
   const { auth } = useContext(AuthContext)
   const { userContext } = useContext(UserContext)
 
+  const [loading, setLoading] = useState(true)
   const [currentUser, setCurrentUser] = useState(userContext.currentUser)
   const [invoices, setInvoices] = useState([])
-  const [loading, setLoading] = useState(true)
 
   const [invoiceToSearch, setInvoiceToSearch] = useState(-1)
+
+  const [Dates, setDates] = useState([])
 
 
   useEffect(() => {
@@ -52,6 +54,14 @@ function App() {
       getInvoices({ auth, user: currentUser._id })
         .then((response) => {
           setInvoices(response.data.invoices)
+          const paidDates = []
+          response.data.invoices.forEach(invoice => {
+            if (invoice.paidDate && !paidDates.includes(new Date(invoice.paidDate).toLocaleString().split(',')[0])) {
+              paidDates.push(new Date(invoice.paidDate).toLocaleString().split(',')[0])
+            }
+          })
+          setDates(paidDates)
+          console.log(paidDates)
         })
         .catch(() => {
           alert('Error getting invoices')
@@ -169,12 +179,11 @@ function App() {
 
       <div id='payment record'>
         <h3>Payment History</h3>
-        {/* map of paid invoices by paidDate */}
-        {invoices.filter(invoice => invoice.paid).map(invoice => (
-          <p key={invoice._id}>
-            {invoice.paidDate ? ` ${new Date(invoice.paidDate).toLocaleString().split(',')[0]}: ${invoice.number}` : ''}
-          </p>
+        {/* list of payment dates and the invoices that were paid on that date */}
+        {Dates.map(date => (
+          <p key={date}>{date}: {(invoices.filter(invoice => new Date(invoice.paidDate).toLocaleString().split(',')[0] === date)).map(invoice => invoice.number).join(', ')}</p>
         ))}
+
         <h4>
           Total Amount Paid: ${invoices.filter(invoice => invoice.paid).reduce((acc, invoice) => acc + invoice.amount, 0).toFixed(2)}
         </h4>
