@@ -22,6 +22,7 @@ function Login() {
         <br></br>
         <button
           type="button"
+          style={{ 'margin-bottom': '5px' }}
           onClick={() => {
 
             getToken({ auth, userContext, name, password })
@@ -41,7 +42,7 @@ function Login() {
           Login
         </button>
       </form>
-    
+
       <a className="login-component" href="/changepassword">Forgot Password?</a>
       <br></br><br></br>
       <a className="login-component" href="/register">Don't have an account? Register Here</a>
