@@ -61,7 +61,7 @@ function App() {
               paidDates.push(new Date(invoice.paidDate).toLocaleString().split(',')[0])
             }
           })
-          setDates(paidDates)
+          setDates(paidDates.reverse())
         })
         .catch(() => {
           alert('Error getting invoices')
