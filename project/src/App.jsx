@@ -20,7 +20,7 @@ function App() {
 
   const [invoiceToSearch, setInvoiceToSearch] = useState(-1)
 
-  const [Dates, setDates] = useState([])
+  const [dates, setDates] = useState([])
   const [filter, setFilter] = useState('all')
 
 
@@ -61,7 +61,7 @@ function App() {
               paidDates.push(new Date(invoice.paidDate).toLocaleString().split(',')[0])
             }
           })
-          setDates(paidDates.reverse())
+          setDates(paidDates)
         })
         .catch(() => {
           alert('Error getting invoices')
@@ -137,7 +137,7 @@ function App() {
 
         {/* displayed invoices */}
         <div className='invoices'
-        style={{ overflowY: 'scroll' }}
+          style={{ overflowY: 'scroll' }}
         >
 
           {/* if invoiceToSearch is set, display the invoice with that number */}
@@ -221,7 +221,23 @@ function App() {
       <div id='payment record'>
         <h3>Payment History</h3>
         {/* list of payment dates and the invoices that were paid on that date */}
-        {Dates.map(date => (
+        <select
+          onChange={(e) => {
+            console.log(e.target.value)
+            if (e.target.value === 'most to least recent') {
+              setDates(dates.slice().reverse())
+            } else {
+              setDates(dates.slice().reverse())
+            }
+          }}>
+          <option value='most to least recent'>
+            Most to least recent
+          </option>
+          <option value='least to most recent'>
+            Least to most recent
+          </option>
+        </select>
+        {dates.map(date => (
           <p key={date}>{date}: {(invoices.filter(invoice => new Date(invoice.paidDate).toLocaleString().split(',')[0] === date)).map(invoice => invoice.number).join(', ')}</p>
         ))}
 
