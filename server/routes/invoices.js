@@ -8,7 +8,11 @@ router.post('/', async (req, res) => {
         const createdInvoice = await Invoice.create({ ...req.body.invoice })
         res.status(201).json(createdInvoice)
     } catch (error) {
-        res.status(400).json({ error: error.message })
+		// Handle duplicate key error from unique index (user + number)
+		if (error && error.code === 11000) {
+			return res.status(409).json({ error: 'Invoice number already exists for this user' })
+		}
+		res.status(400).json({ error: error.message })
     }
 })
 

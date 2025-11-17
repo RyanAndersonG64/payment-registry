@@ -8,7 +8,6 @@ const invoiceSchema = new mongoose.Schema({
     number: {
         type: Number,
         required: true,
-        unique: true,
     },
     amount: {
         type: Number,
@@ -25,5 +24,8 @@ const invoiceSchema = new mongoose.Schema({
     },
 
 })
+
+// Enforce uniqueness per user: a user can reuse numbers that exist for other users
+invoiceSchema.index({ user: 1, number: 1 }, { unique: true })
 
 module.exports = mongoose.model('Invoice', invoiceSchema)

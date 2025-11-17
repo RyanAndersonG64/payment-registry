@@ -20,9 +20,24 @@
   background-color: green;
 }
 
+.invoices {
+  /* make it so first 5 items are in one column, then the next 5 in the next column, etc. */
+  display: grid;
+  grid-template-columns: repeat(1, 10fr);
+  gap: 10px;
+  justify-items: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  padding: 10px;
+  box-sizing: border-box;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
 .invoice-cell {
   border: 1px solid black;
-  padding: 10px;
+  padding:5px;
   width: fit-content;
   /* center the invoice-cell */
   margin: 0 auto;
