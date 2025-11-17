@@ -111,8 +111,8 @@ function InvoiceDiv(invoice) {
             />
             &nbsp;&nbsp;
             $
-            <input type='number' style={{ width: '100px', textAlign: 'center' }}
-                defaultValue={thisInvoice.amount}
+            <input type='text' style={{ width: '100px', textAlign: 'center' }}
+                defaultValue={Number(thisInvoice.amount).toFixed(2)}
 
                 //update invoice amount
                 onChange={(e) => {
@@ -120,25 +120,34 @@ function InvoiceDiv(invoice) {
                 }}
                 onBlur={(e) => {
                     if (amountToUpdate === '') {
-                        e.target.value = thisInvoice.amount
+                        e.target.value = Number(thisInvoice.amount).toFixed(2)
                         return
                     }
 
-                    // check if amountToUpdate is a positive number with 2 decimal places
-                    if (isNaN(amountToUpdate) || amountToUpdate < 0 || amountToUpdate.toString().split('.')[1]?.length !== 2) {
-                        alert('Amount must be a positive number with 2 decimal places')
-                        e.target.value = thisInvoice.amount
+                    // validate exact two decimals and positivity
+                    const amountString = (amountToUpdate || '').trim()
+                    const amountRegex = /^(?:0|[1-9]\d*)\.\d{2}$/
+                    if (!amountRegex.test(amountString)) {
+                        alert('Amount must be a positive number with two decimal places')
+                        e.target.value = Number(thisInvoice.amount).toFixed(2)
+                        setAmountToUpdate('')
+                        return
+                    }
+                    const numericAmount = Number(amountString)
+                    if (numericAmount <= 0) {
+                        alert('Amount must be a positive number')
+                        e.target.value = Number(thisInvoice.amount).toFixed(2)
                         setAmountToUpdate('')
                         return
                     }
 
-                    if (amountToUpdate === thisInvoice.amount) {
+                    if (numericAmount === Number(thisInvoice.amount)) {
                         return
                     }
 
 
                     if (amountToUpdate !== '') {
-                        sendInvoiceUpdate({ _id: thisInvoice._id, amount: amountToUpdate })
+                        sendInvoiceUpdate({ _id: thisInvoice._id, amount: numericAmount })
                         setAmountToUpdate('')
                     }
                 }}

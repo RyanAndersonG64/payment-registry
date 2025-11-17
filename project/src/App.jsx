@@ -186,15 +186,16 @@ function App() {
           }
 
           const newAmountInput = prompt('Enter invoice amount')
-          const newAmount = Number(newAmountInput)
-          // check if newAmount is a positive number
-          if (isNaN(newAmount) || newAmount <= 0) {
-            alert('Invoice amount must be a positive number')
+          const amountString = (newAmountInput || '').trim()
+          // require exactly two decimal places, preserving trailing zeros (e.g., 12.30, 123.00)
+          const amountRegex = /^(?:0|[1-9]\d*)\.\d{2}$/
+          if (!amountRegex.test(amountString)) {
+            alert('Invoice amount must be a positive amount with two decimal places ')
             return
           }
-          // check if newAmount has two decimal places
-          if (newAmount.toString().split('.')[1]?.length !== 2) {
-            alert('Invoice amount must be an amount of dollars and cents')
+          const newAmount = Number(amountString)
+          if (newAmount <= 0) {
+            alert('Invoice amount must be a positive number')
             return
           }
 
