@@ -16,9 +16,10 @@ function Login() {
     <div>
       <h1>Login</h1>
       <form>
-        <input type="text" placeholder="Username" value={name} onChange={(e) => setName(e.target.value)} />
+        <input type="text" className="login-component" placeholder="Username" value={name} onChange={(e) => setName(e.target.value)} />
         <br></br>
-        <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
+        <input type="password" className="login-component" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
+        <br></br>
         <button
           type="button"
           onClick={() => {
@@ -40,8 +41,10 @@ function Login() {
           Login
         </button>
       </form>
-      <br></br>
-      <a href="/register">Register</a>
+    
+      <a className="login-component" href="/changepassword">Forgot Password?</a>
+      <br></br><br></br>
+      <a className="login-component" href="/register">Don't have an account? Register Here</a>
     </div>
   )
 }

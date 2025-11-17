@@ -14,10 +14,25 @@ export const createUser = ({ name, password }) => {
       password,
     }
   })
-    .then(response => {
-     
+    .catch(error => {
+      console.log('ERROR: ', error)
+      alert('Error creating user')
     })
-    .catch(error => console.log('ERROR: ', error))
+}
+
+export const changePassword = ({ name, password }) => {
+  return axios({
+    method: 'post',
+    url: `${baseUrl}/auth/change-password/`,
+    data: {
+      name,
+      password,
+    }
+  })
+    .catch(error => {
+      console.log('ERROR: ', error)
+      alert('Error changing password')
+    })
 }
 
 export const getUser = ({ userContext }) => {
@@ -25,7 +40,6 @@ export const getUser = ({ userContext }) => {
     method: 'get',
     url: `${baseUrl}/auth/me/`,
   }).then(response => {
-    
     return response
   }).catch(error => console.log('ERROR: ', error))
 }

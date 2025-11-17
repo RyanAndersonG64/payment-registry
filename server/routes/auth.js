@@ -19,6 +19,22 @@ router.post('/register', async (req, res) => {
     }
 })
 
+//Change Password
+router.post('/change-password', async (req, res) => {
+    const { name, password } = req.body
+    try {
+        const user = await User.findOne({ name: name})
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' })
+        }
+        user.password = await bcrypt.hash(password, 10)
+        await user.save()
+        res.status(200).json({ message: 'Password changed successfully' })
+    } catch (error) {
+        res.status(400).json({ error: error.message })
+    }
+})
+
 //Login
 router.post('/login', async (req, res) => {
     const { name, password } = req.body

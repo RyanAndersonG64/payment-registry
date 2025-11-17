@@ -14,14 +14,13 @@ function Register() {
     <div>
       <h1>Register</h1>
       <form>
-        <input type="text" placeholder="Username" value={name} onChange={(e) => setName(e.target.value)} />
+        <input className="login-component" type="text" placeholder="Username" value={name} onChange={(e) => setName(e.target.value)} />
         <br></br>
-        <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
-        <button
+        <input className="login-component" type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} />
+        <br></br>
+        <button className="login-component"
           type="button"
           onClick={() => {
-            console.log('REGISTER BUTTON CLICKED')
-            console.log(name, password)
             createUser({ name, password })
               .then(response => {
                 console.log('REGISTER RESPONSE: ', response)
@@ -29,7 +28,6 @@ function Register() {
               })
               .catch(error => {
                 console.log('ERROR: ', error)
-                alert('Error registering user')
               })
           }}
         >
