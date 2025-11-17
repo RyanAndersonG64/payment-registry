@@ -21,9 +21,8 @@
 }
 
 .invoices {
-  /* make it so first 5 items are in one column, then the next 5 in the next column, etc. */
   display: grid;
-  grid-template-columns: repeat(1, 10fr);
+  grid-template-columns: repeat(4, 10fr);
   gap: 10px;
   justify-items: center;
   align-items: center;
@@ -43,12 +42,16 @@
   margin: 0 auto;
 }
 
+.invoice-cell button {
+  margin-top: 5px;
+  margin-right: 5px;
+}
+
 .invoice-cell input {
   width: 100px;
   text-align: center;
   margin: 0 10px;
   border: 1px solid black;
-  padding: 5px;
   border-radius: 5px;
 }
 
