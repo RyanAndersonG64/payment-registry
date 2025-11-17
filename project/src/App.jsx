@@ -188,8 +188,9 @@ function App() {
 
           const newAmountInput = prompt('Enter invoice amount')
           const amountString = (newAmountInput || '').trim()
-          // require exactly two decimal places, preserving trailing zeros (e.g., 12.30, 123.00)
-          const amountRegex = /^(?:0|[1-9]\d*)\.\d{2}$/
+          // require exactly two decimal places, preserving trailing zeros
+          // if 0 or 1 decimals, autofill remaining decimal place(s) with 0
+          const amountRegex = /^(?:0|[1-9]\d*)\.*\d{0,2}$/
           if (!amountRegex.test(amountString)) {
             alert('Invoice amount must be a positive amount with two decimal places ')
             return
