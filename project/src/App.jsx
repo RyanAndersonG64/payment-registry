@@ -105,10 +105,12 @@ function App() {
       <div className='app-body'>
         <h1>Invoices</h1>
 
-        <select onChange={(e) => {
-          setFilter(e.target.value)
-          setInvoiceToSearch(-1)
-        }}>
+        <select
+          style={{ marginBottom: '5px' }}
+          onChange={(e) => {
+            setFilter(e.target.value)
+            setInvoiceToSearch(-1)
+          }}>
 
           <option value='all'>
             All
@@ -121,7 +123,7 @@ function App() {
           </option>
         </select>
 
-        <br></br><br></br>
+        <br></br>
 
         {/* invoice number search bar */}
         <input type='number'
@@ -133,7 +135,9 @@ function App() {
         <br></br><br></br>
 
         {/* displayed invoices */}
-        <div className='invoices'>
+        <div className='invoices'
+        style={{ overflowY: 'scroll' }}
+        >
 
           {/* if invoiceToSearch is set, display the invoice with that number */}
           {(invoiceToSearch && invoices.find(invoice => invoice.number === invoiceToSearch)) ?

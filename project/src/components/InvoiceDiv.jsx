@@ -36,7 +36,8 @@ function InvoiceDiv(invoice) {
 
     return (
         <div key={thisInvoice._id} className='invoice-cell' style={{ color: thisInvoice.paid ? 'green' : 'red' }}>
-            <input type='number'
+            #
+            <input type='number' style={{ width: '50px', textAlign: 'center' }}
                 defaultValue={thisInvoice.number}
 
                 //update invoice number
@@ -110,7 +111,7 @@ function InvoiceDiv(invoice) {
             />
             &nbsp;&nbsp;
             $
-            <input type='number'
+            <input type='number' style={{ width: '100px', textAlign: 'center' }}
                 defaultValue={thisInvoice.amount}
 
                 //update invoice amount
@@ -142,7 +143,7 @@ function InvoiceDiv(invoice) {
                     }
                 }}
             />
-            <p>{thisInvoice.paidDate ? `Paid on ${new Date(thisInvoice.paidDate).toLocaleString().split(',')[0]}` : ''}</p>
+            {/* <p>{thisInvoice.paidDate ? `Paid on ${new Date(thisInvoice.paidDate).toLocaleString().split(',')[0]}` : 'Unpaid'}</p> */}
             <button onClick={() => {
                 if (confirm('Are you sure you want to update this invoice payment status?')) {
                     sendInvoiceUpdate({ _id: thisInvoice._id, paid: !thisInvoice.paid })
@@ -173,8 +174,6 @@ function InvoiceDiv(invoice) {
             }}>
                 Delete
             </button>
-            <br></br>
-            <br></br>
         </div>
     )
 }
