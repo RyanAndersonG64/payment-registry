@@ -88,6 +88,7 @@ function App() {
 
       <div className='app-header'>
         {currentUser?.name || ''}
+        &nbsp;&nbsp;
         <button onClick={() => {
           logout({ userContext })
             .then(() => {
