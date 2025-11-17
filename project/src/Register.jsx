@@ -23,7 +23,6 @@ function Register() {
           onClick={() => {
             createUser({ name, password })
               .then(response => {
-                console.log('REGISTER RESPONSE: ', response)
                 navigate('/login')
               })
               .catch(error => {

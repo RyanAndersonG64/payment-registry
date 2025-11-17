@@ -6,7 +6,7 @@ axios.defaults.withCredentials = true
 // User/Auth API
 
 export const createUser = ({ name, password }) => {
-  axios({
+  return axios({
     method: 'post',
     url: `${baseUrl}/auth/register`,
     data: {
@@ -14,6 +14,9 @@ export const createUser = ({ name, password }) => {
       password,
     }
   })
+    .then(response => {
+      return response
+    })
     .catch(error => {
       console.log('ERROR: ', error)
       alert('Error creating user')
