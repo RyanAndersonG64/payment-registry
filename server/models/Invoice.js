@@ -13,6 +13,11 @@ const invoiceSchema = new mongoose.Schema({
         type: Number,
         required: true,
     },
+    createdDate: {
+        type: Date,
+        default: Date.now,
+        required: true,
+    },
     paid: {
         type: Boolean,
         default: false,

@@ -119,7 +119,12 @@ export const updateInvoice = ({ auth, invoice }) => {
   }).then(response => {
     console.log('UPDATE INVOICE RESPONSE: ', response)
     return response
-  }).catch(error => console.log('ERROR: ', error))
+  }).catch(error => {
+    console.log('ERROR: ', error)
+    if (error?.response?.status === 409) {
+      alert('Number already in use')
+    }
+  })
 }
 
 export const deleteInvoice = ({ auth, invoice }) => {

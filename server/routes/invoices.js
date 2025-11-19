@@ -8,11 +8,11 @@ router.post('/', async (req, res) => {
         const createdInvoice = await Invoice.create({ ...req.body.invoice })
         res.status(201).json(createdInvoice)
     } catch (error) {
-		// Handle duplicate key error from unique index (user + number)
-		if (error && error.code === 11000) {
-			return res.status(409).json({ error: 'Invoice number already exists for this user' })
-		}
-		res.status(400).json({ error: error.message })
+        // Handle duplicate key error from unique index (user + number)
+        if (error && error.code === 11000) {
+            return res.status(409).json({ error: 'Invoice number already exists for this user' })
+        }
+        res.status(400).json({ error: error.message })
     }
 })
 
@@ -35,6 +35,11 @@ router.patch('/:invoiceId', async (req, res) => {
         const updates = req.body
         if (updates.number) {
             invoiceToUpdate.number = updates.number
+            // check if the number already exists for this user
+            const existingInvoice = await Invoice.findOne({ user: invoiceToUpdate.user, number: updates.number, _id: { $ne: invoiceToUpdate._id } })
+            if (existingInvoice) {
+                return res.status(409).json({ error: 'Invoice number already exists for this user' })
+            }
         }
 
         if (updates.amount) {

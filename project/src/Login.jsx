@@ -14,7 +14,8 @@ function Login() {
 
   return (
     <div>
-      <h1>Login</h1>
+      <h1>Payment Registry</h1>
+      <h2>Login</h2>
       <form>
         <input type="text" className="login-component" placeholder="Username" value={name} onChange={(e) => setName(e.target.value)} />
         <br></br>
