@@ -288,7 +288,7 @@ function App() {
           }
           const newAmount = Number(amountString)
 
-          // this seems unnecessary since the regex prevents negative numbers, but keeping just in case
+          // this seems redundantsince the regex prevents negative numbers, but leaving it herejust in case
           // if (newAmount <= 0) {
           //   alert('Invoice amount must be a positive number')
           //   return

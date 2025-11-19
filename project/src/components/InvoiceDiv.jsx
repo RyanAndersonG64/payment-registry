@@ -24,8 +24,8 @@ function InvoiceDiv(invoice) {
     // function for sending an invoice update to the backend
     function sendInvoiceUpdate(invoiceToUpdate) {
         return updateInvoice({ auth, invoice: invoiceToUpdate })
-            .then((response) => {
-                console.log(response)
+            .then(() => {
+
                 if (invoice.refreshInvoices) {
                     invoice.refreshInvoices()
                 } else {
@@ -52,7 +52,7 @@ function InvoiceDiv(invoice) {
                     setNumberToUpdate(e.target.value)
                 }}
 
-                // on blur or enter, check if numberToUpdate is a positive whole number and send the update
+                // on blur, check if numberToUpdate is a positive whole number and send the update
                 onBlur={(e) => {
 
                     // if numberToUpdate is empty, set the value to the current invoice number and don't send the update
@@ -74,18 +74,16 @@ function InvoiceDiv(invoice) {
                         return
                     }
 
-                    // if numberToUpdate is not empty, send the update
+                    // if numberToUpdate is not empty, send the update and then clear numberToUpdate
                     if (numberToUpdate !== '') {
                         sendInvoiceUpdate({ _id: thisInvoice._id, number: numberToUpdate })
-
-                        e.target.value = thisInvoice.number
-                        setNumberToUpdate('')
 
                         setNumberToUpdate('')
                         return
                     }
                 }}
 
+                // same as onBlur, but for pressing Enter
                 onKeyDown={(e) => {
                     if (e.key === 'Enter') {
 
@@ -108,8 +106,12 @@ function InvoiceDiv(invoice) {
 
                         sendInvoiceUpdate({ _id: thisInvoice._id, number: numberToUpdate })
 
+                        setNumberToUpdate('')
+                        return
                     }
                 }}
+
+                // clear numberToUpdate when enter is released; I'm not sure why this is needed, but the number input bugs out sometimes without it
                 onKeyUp={(e) => {
                     if (e.key === 'Enter') {
                         setNumberToUpdate('')
@@ -129,6 +131,7 @@ function InvoiceDiv(invoice) {
                     setAmountToUpdate(e.target.value)
                 }}
                 onBlur={(e) => {
+                    // if amountToUpdate is empty, set the value to the current invoice amount and don't send the update
                     if (amountToUpdate === '') {
                         e.target.value = Number(thisInvoice.amount).toFixed(2)
                         return
@@ -137,25 +140,32 @@ function InvoiceDiv(invoice) {
                     // validate exact two decimals and positivity
                     const amountString = (amountToUpdate || '').trim()
                     const amountRegex = /^(?:0|[1-9]\d*)\.\d{2}$/
+
+                    // if amountToUpdate is not a valid amount, alert the user and set the value to the current invoice amount and don't send the update
                     if (!amountRegex.test(amountString)) {
                         alert('Amount must be a positive number with two decimal places')
                         e.target.value = Number(thisInvoice.amount).toFixed(2)
                         setAmountToUpdate('')
                         return
                     }
-                    const numericAmount = Number(amountString)
-                    if (numericAmount <= 0) {
-                        alert('Amount must be a positive number')
-                        e.target.value = Number(thisInvoice.amount).toFixed(2)
-                        setAmountToUpdate('')
-                        return
-                    }
 
+                    // convert amountToUpdate to a number
+                    const numericAmount = Number(amountString)
+
+                    // this seems redundant since the regex prevents negative numbers, but leaving here just in case
+                    // if (numericAmount <= 0) {
+                    //     alert('Amount must be a positive number')
+                    //     e.target.value = Number(thisInvoice.amount).toFixed(2)
+                    //     setAmountToUpdate('')
+                    //     return
+                    // }
+
+                    // if amountToUpdate is the same as the current invoice amount, don't send the update
                     if (numericAmount === Number(thisInvoice.amount)) {
                         return
                     }
 
-
+                    // if amountToUpdate is not empty, send the update and then clear amountToUpdate
                     if (amountToUpdate !== '') {
                         sendInvoiceUpdate({ _id: thisInvoice._id, amount: numericAmount })
                         setAmountToUpdate('')
@@ -163,10 +173,14 @@ function InvoiceDiv(invoice) {
                 }}
             />
             <br></br>
+
+            {/* display created date and paid status/date */}
             {thisInvoice.createdDate ? `Created on ${new Date(thisInvoice.createdDate).toLocaleString().split(',')[0]}` : ''}
             <br></br>
             {thisInvoice.paidDate ? `Paid on ${new Date(thisInvoice.paidDate).toLocaleString().split(',')[0]}` : 'Unpaid'}
             <br></br>
+
+            {/* button to update invoice payment status */}
             <button onClick={() => {
                 if (confirm('Are you sure you want to update this invoice payment status?')) {
                     sendInvoiceUpdate({ _id: thisInvoice._id, paid: !thisInvoice.paid })
@@ -187,6 +201,8 @@ function InvoiceDiv(invoice) {
             }}>
                 {thisInvoice.paid ? 'Mark as Unpaid' : 'Mark as Paid'}
             </button>
+
+            {/* button to delete invoice */}
             <button onClick={() => {
                 if (confirm('Are you sure you want to delete this invoice?')) {
                     deleteInvoice({ auth, invoice: { _id: thisInvoice._id } })
@@ -210,6 +226,7 @@ function InvoiceDiv(invoice) {
             }}>
                 Delete
             </button>
+
         </div>
     )
 }
