@@ -10,6 +10,7 @@ import './App.css'
 import { getUser, logout, getInvoices, createInvoice } from './api'
 
 function App() {
+
   const navigate = useNavigate()
   const { auth } = useContext(AuthContext)
   const { userContext } = useContext(UserContext)
@@ -20,13 +21,14 @@ function App() {
 
   const [invoiceToSearch, setInvoiceToSearch] = useState(-1)
 
+  // states used for filtering and sorting invoices
   const [year, setYear] = useState(new Date().getFullYear().toString())
   const [years, setYears] = useState([])
   const [dates, setDates] = useState([])
   const [filter, setFilter] = useState('all')
   const [sortBy, setSortBy] = useState('number')
 
-
+  // allows loading time for initial responses from backend
   useEffect(() => {
     if (userContext.currentUser) {
       setCurrentUser(userContext.currentUser)
@@ -99,11 +101,10 @@ function App() {
       })
   }
 
-  // Recompute paid dates whenever invoices change
+  // Updates payment history when an invoice is paid or unpaid
   useEffect(() => {
     const paidDates = []
     invoices.forEach((invoice) => {
-      // console.log(invoice.createdDate.split('-')[0] === year)
       if (invoice.paidDate) {
         const dateString = new Date(invoice.paidDate).toLocaleString().split(',')[0]
         if (!paidDates.includes(dateString)) {
@@ -120,6 +121,7 @@ function App() {
   return (
     <div className='app'>
 
+      {/*  header with logout button */}
       <div className='app-header'>
         {currentUser?.name || ''}
         &nbsp;&nbsp;
@@ -137,9 +139,11 @@ function App() {
         </button>
       </div>
 
+      {/* main body of the app */}
       <div className='app-body'>
         <h1>Invoices</h1>
 
+        {/* year selector */}
         <select
           style={{ marginBottom: '5px' }}
           defaultValue={year}
@@ -159,6 +163,7 @@ function App() {
         </select>
         <br></br>
 
+        {/* filter based on paid status */}
         <select
           style={{ marginBottom: '5px' }}
           defaultValue={year}
@@ -188,6 +193,8 @@ function App() {
           }}
         />
         <br></br>
+
+        {/* sort by number or creation date */}
         <select style={{ marginBottom: '5px' }}
           onChange={(e) => {
             setSortBy(e.target.value)
@@ -210,6 +217,10 @@ function App() {
           {/* if invoiceToSearch is set, display the invoice with that number */}
           {(invoiceToSearch && invoices.find(invoice => invoice.number === invoiceToSearch)) ?
             <InvoiceDiv invoice={invoices.find(invoice => invoice.number === invoiceToSearch)} refreshInvoices={refreshInvoices} key={invoices.find(invoice => invoice.number === invoiceToSearch)._id} />
+
+
+            // priority based on 'all' and 'number' being the default filter values
+            // invoices displayed on the ones from the selected year (or all if year is set to 'all')
 
             // if filter is set to all and sortBy is set to number, display all invoices sorted by number
             : filter === 'all' && sortBy === 'number' ? invoices.sort((a, b) => a.number - b.number).map(invoice => (invoice.createdDate.split('-')[0] === year || year === 'all') && (
@@ -250,19 +261,13 @@ function App() {
           const newNumberInput = prompt('Enter invoice number')
           const newNumber = Number(newNumberInput)
 
-          // check if newNumber is a number
-          if (isNaN(newNumber)) {
-            alert('Invoice number must be a number')
-            return
-          }
-
           // check if newNumber is a positive whole number
-          if (newNumber % 1 !== 0 || newNumber < 0) {
+          if (isNaN(newNumber) || newNumber % 1 !== 0 || newNumber < 0) {
             alert('Invoice number must be a positive whole number')
             return
           }
 
-          // check if an invoice with this number and user already exists
+          // check if an invoice with this number already exists for this user
           const existingInvoice = invoices.find(invoice => invoice.number === newNumber)
           if (existingInvoice) {
             alert('Invoice with this number already exists')
@@ -270,20 +275,27 @@ function App() {
           }
 
           const newAmountInput = prompt('Enter invoice amount')
+
+          // trim whitespace and convert to number
           const amountString = (newAmountInput || '').trim()
+
           // require exactly two decimal places, preserving trailing zeros
           // if 0 or 1 decimals, autofill remaining decimal place(s) with 0
           const amountRegex = /^(?:0|[1-9]\d*)\.*\d{0,2}$/
           if (!amountRegex.test(amountString)) {
-            alert('Invoice amount must be a positive amount with two decimal places ')
+            alert('Invoice amount must be a positive number with two decimal places ')
             return
           }
           const newAmount = Number(amountString)
-          if (newAmount <= 0) {
-            alert('Invoice amount must be a positive number')
-            return
-          }
 
+          // this seems unnecessary since the regex prevents negative numbers, but keeping just in case
+          // if (newAmount <= 0) {
+          //   alert('Invoice amount must be a positive number')
+          //   return
+          // }
+
+
+          // create new invoice and then refresh the invoices list
           createInvoice({ auth, invoice: { user: currentUser._id, number: newNumber, amount: newAmount } })
             .then(() => {
               getInvoices({ auth, user: currentUser._id })
@@ -297,14 +309,18 @@ function App() {
             .catch(() => {
               alert('Error creating invoice')
             })
+
         }}>
           Create Invoice
         </button>
       </div>
 
+      {/* payment record section */}
       <div id='payment record'>
+
         <h3>Payment History</h3>
-        {/* list of payment dates and the invoices that were paid on that date */}
+
+        {/* sort dates by newest or oldest */}
         <select
           onChange={(e) => {
             if (e.target.value === 'most to least recent') {
@@ -320,6 +336,9 @@ function App() {
             Least to most recent
           </option>
         </select>
+
+
+        {/* list of payment dates and the invoices that were paid on that date */}
         {dates.map(date => (
           <p key={date}>{date}: {(invoices.filter(invoice => new Date(invoice.paidDate).toLocaleString().split(',')[0] === date)).map(invoice => invoice.number).join(', ')}</p>
         ))}
