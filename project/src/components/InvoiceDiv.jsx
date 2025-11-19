@@ -20,7 +20,7 @@ function InvoiceDiv(invoice) {
     }, [invoice])
     
     function sendInvoiceUpdate(invoiceToUpdate) {
-        updateInvoice({ auth, invoice: invoiceToUpdate })
+        return updateInvoice({ auth, invoice: invoiceToUpdate })
             .then(() => {
                 if (invoice.refreshInvoices) {
                     invoice.refreshInvoices()
@@ -152,10 +152,25 @@ function InvoiceDiv(invoice) {
                     }
                 }}
             />
-            {/* <p>{thisInvoice.paidDate ? `Paid on ${new Date(thisInvoice.paidDate).toLocaleString().split(',')[0]}` : 'Unpaid'}</p> */}
+            <br></br>
+            {thisInvoice.createdDate ? `${new Date(thisInvoice.createdDate).toLocaleString().split(',')[0]}` : ''}
+            <br></br>
             <button onClick={() => {
                 if (confirm('Are you sure you want to update this invoice payment status?')) {
                     sendInvoiceUpdate({ _id: thisInvoice._id, paid: !thisInvoice.paid })
+                    .then(() => {
+                        if (invoice.refreshInvoices) {
+                            invoice.refreshInvoices()
+                        } else {
+                            getInvoices({ auth, user: currentUser._id })
+                                .then((response) => {
+                                    setInvoices(response.data.invoices)
+                                })
+                        }
+                    })
+                    .catch(() => {
+                        alert('Error updating invoice payment status')
+                    })
                 }
             }}>
                 {thisInvoice.paid ? 'Mark as Unpaid' : 'Mark as Paid'}

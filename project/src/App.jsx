@@ -22,6 +22,7 @@ function App() {
 
   const [dates, setDates] = useState([])
   const [filter, setFilter] = useState('all')
+  const [sortBy, setSortBy] = useState('number')
 
 
   useEffect(() => {
@@ -61,6 +62,8 @@ function App() {
               paidDates.push(new Date(invoice.paidDate).toLocaleString().split(',')[0])
             }
           })
+          // sort paidDates in chronological order
+          paidDates.sort((a, b) => new Date(a) - new Date(b))
           setDates(paidDates)
         })
         .catch(() => {
@@ -70,6 +73,7 @@ function App() {
   }, [loading])
 
   // helper to allow children to trigger a refresh
+  // This is used to refresh the invoices list when an invoiceDiv component is updated
   const refreshInvoices = () => {
     if (!currentUser || !currentUser._id) return
     getInvoices({ auth, user: currentUser._id })
@@ -80,6 +84,21 @@ function App() {
         alert('Error getting invoices')
       })
   }
+
+  // Recompute paid dates whenever invoices change
+  useEffect(() => {
+    const paidDates = []
+    invoices.forEach((invoice) => {
+      if (invoice.paidDate) {
+        const dateString = new Date(invoice.paidDate).toLocaleString().split(',')[0]
+        if (!paidDates.includes(dateString)) {
+          paidDates.push(dateString)
+        }
+      }
+    })
+    paidDates.sort((a, b) => new Date(a) - new Date(b))
+    setDates(paidDates)
+  }, [invoices])
 
 
 
@@ -127,12 +146,25 @@ function App() {
         <br></br>
 
         {/* invoice number search bar */}
-        <input type='number'
+        <input type='number' style={{ marginBottom: '5px' }}
           placeholder='Search invoice number'
           onChange={(e) => {
             setInvoiceToSearch(Number(e.target.value))
           }}
         />
+        <br></br>
+        <select style={{ marginBottom: '5px' }}
+          onChange={(e) => {
+            setSortBy(e.target.value)
+          }}
+        >
+          <option value='all'>
+            Sort by number
+          </option>
+          <option value='creation date'>
+            Sort by creation date
+          </option>
+        </select>
         <br></br><br></br>
 
         {/* displayed invoices */}
@@ -224,7 +256,6 @@ function App() {
         {/* list of payment dates and the invoices that were paid on that date */}
         <select
           onChange={(e) => {
-            console.log(e.target.value)
             if (e.target.value === 'most to least recent') {
               setDates(dates.slice().reverse())
             } else {
