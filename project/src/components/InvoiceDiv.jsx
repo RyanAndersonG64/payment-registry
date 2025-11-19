@@ -24,7 +24,8 @@ function InvoiceDiv(invoice) {
     // function for sending an invoice update to the backend
     function sendInvoiceUpdate(invoiceToUpdate) {
         return updateInvoice({ auth, invoice: invoiceToUpdate })
-            .then(() => {
+            .then((response) => {
+                console.log(response)
                 if (invoice.refreshInvoices) {
                     invoice.refreshInvoices()
                 } else {
@@ -44,7 +45,7 @@ function InvoiceDiv(invoice) {
             #
             {/* input to display and update invoice number */}
             <input type='number' style={{ width: '50px', textAlign: 'center' }}
-                defaultValue={thisInvoice.number}
+                value={numberToUpdate || thisInvoice.number}
 
                 // update invoice number on change
                 onChange={(e) => {
@@ -76,7 +77,10 @@ function InvoiceDiv(invoice) {
                     // if numberToUpdate is not empty, send the update
                     if (numberToUpdate !== '') {
                         sendInvoiceUpdate({ _id: thisInvoice._id, number: numberToUpdate })
-                        
+
+                        e.target.value = thisInvoice.number
+                        setNumberToUpdate('')
+
                         setNumberToUpdate('')
                         return
                     }
@@ -104,8 +108,6 @@ function InvoiceDiv(invoice) {
 
                         sendInvoiceUpdate({ _id: thisInvoice._id, number: numberToUpdate })
 
-                        setNumberToUpdate('')
-                        return
                     }
                 }}
                 onKeyUp={(e) => {

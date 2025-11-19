@@ -124,6 +124,7 @@ export const updateInvoice = ({ auth, invoice }) => {
     if (error?.response?.status === 409) {
       alert('Number already in use')
     }
+    return error
   })
 }
 
