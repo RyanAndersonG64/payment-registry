@@ -9,15 +9,19 @@ function InvoiceDiv(invoice) {
     const { auth } = useContext(AuthContext)
     const { userContext } = useContext(UserContext)
     const [currentUser, setCurrentUser] = useState(userContext.currentUser)
+
     const [invoices, setInvoices] = useState([])
+
     const [thisInvoice, setThisInvoice] = useState([])
     const [numberToUpdate, setNumberToUpdate] = useState('')
     const [amountToUpdate, setAmountToUpdate] = useState('')
 
+    // set the invoice to the invoice passed in
     useEffect(() => {
         setThisInvoice(invoice.invoice)
     }, [invoice])
 
+    // function for sending an invoice update to the backend
     function sendInvoiceUpdate(invoiceToUpdate) {
         return updateInvoice({ auth, invoice: invoiceToUpdate })
             .then(() => {
@@ -34,12 +38,15 @@ function InvoiceDiv(invoice) {
     }
 
     return (
+
+        // invoice cell component
         <div key={thisInvoice._id} className='invoice-cell' style={{ color: thisInvoice.paid ? 'green' : 'red' }}>
             #
+            {/* input to display and update invoice number */}
             <input type='number' style={{ width: '50px', textAlign: 'center' }}
                 defaultValue={thisInvoice.number}
 
-                //update invoice number
+                // update invoice number on change
                 onChange={(e) => {
                     setNumberToUpdate(e.target.value)
                 }}
@@ -47,11 +54,13 @@ function InvoiceDiv(invoice) {
                 // on blur or enter, check if numberToUpdate is a positive whole number and send the update
                 onBlur={(e) => {
 
+                    // if numberToUpdate is empty, set the value to the current invoice number and don't send the update
                     if (numberToUpdate === '') {
                         e.target.value = thisInvoice.number
                         return
                     }
 
+                    // if numberToUpdate is not a positive whole number, alert the user and set the value to the current invoice number and don't send the update
                     if (isNaN(numberToUpdate) || numberToUpdate % 1 !== 0 || numberToUpdate < 0) {
                         alert('Number must be a positive whole number')
                         e.target.value = thisInvoice.number
@@ -59,19 +68,17 @@ function InvoiceDiv(invoice) {
                         return
                     }
 
+                    // if numberToUpdate is the same as the current invoice number, don't send the update
                     if (numberToUpdate === thisInvoice.number) {
                         return
                     }
 
-                    const existingInvoice = invoices.find(invoice => thisInvoice.number === numberToUpdate)
-                    if (existingInvoice) {
-                        alert('Number already in use')
-                        return
-                    }
-
+                    // if numberToUpdate is not empty, send the update
                     if (numberToUpdate !== '') {
                         sendInvoiceUpdate({ _id: thisInvoice._id, number: numberToUpdate })
+                        
                         setNumberToUpdate('')
+                        return
                     }
                 }}
 
@@ -94,12 +101,11 @@ function InvoiceDiv(invoice) {
                         if (numberToUpdate === thisInvoice.number) {
                             return
                         }
-                        const existingInvoice = invoices.find(invoice => thisInvoice.number === numberToUpdate)
-                        if (existingInvoice) {
-                            alert('Number already in use')
-                            return
-                        }
+
                         sendInvoiceUpdate({ _id: thisInvoice._id, number: numberToUpdate })
+
+                        setNumberToUpdate('')
+                        return
                     }
                 }}
                 onKeyUp={(e) => {
@@ -108,8 +114,11 @@ function InvoiceDiv(invoice) {
                     }
                 }}
             />
+
             &nbsp;&nbsp;
+
             $
+            {/* input to display and update invoice amount */}
             <input type='text' style={{ width: '100px', textAlign: 'center' }}
                 defaultValue={Number(thisInvoice.amount).toFixed(2)}
 

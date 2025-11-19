@@ -35,6 +35,11 @@ router.patch('/:invoiceId', async (req, res) => {
         const updates = req.body
         if (updates.number) {
             invoiceToUpdate.number = updates.number
+            // check if the number already exists for this user
+            const existingInvoice = await Invoice.findOne({ user: invoiceToUpdate.user, number: updates.number, _id: { $ne: invoiceToUpdate._id } })
+            if (existingInvoice) {
+                return res.status(409).json({ error: 'Invoice number already exists for this user' })
+            }
         }
 
         if (updates.amount) {
