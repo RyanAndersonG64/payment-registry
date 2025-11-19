@@ -156,9 +156,10 @@ function App() {
         <select style={{ marginBottom: '5px' }}
           onChange={(e) => {
             setSortBy(e.target.value)
+            console.log(e.target.value)
           }}
         >
-          <option value='all'>
+          <option value='number'>
             Sort by number
           </option>
           <option value='creation date'>
@@ -176,20 +177,36 @@ function App() {
           {(invoiceToSearch && invoices.find(invoice => invoice.number === invoiceToSearch)) ?
             <InvoiceDiv invoice={invoices.find(invoice => invoice.number === invoiceToSearch)} refreshInvoices={refreshInvoices} key={invoices.find(invoice => invoice.number === invoiceToSearch)._id} />
 
-            // if filter is set to all, display all invoices
-            : filter === 'all' ? invoices.sort((a, b) => a.number - b.number).map(invoice => (
+            // if filter is set to all and sortBy is set to number, display all invoices sorted by number
+            : filter === 'all' && sortBy === 'number' ? invoices.sort((a, b) => a.number - b.number).map(invoice => (
               <InvoiceDiv invoice={invoice} refreshInvoices={refreshInvoices} key={invoice._id} />
             ))
 
-              // if filter is set to paid, display all paid invoices
-              : filter === 'paid' ? invoices.filter(invoice => invoice.paid).sort((a, b) => a.number - b.number).map(invoice => (
+              // if filter is set to all and sortBy is set to creation date, display all invoices sorted by creation date
+              : filter === 'all' && sortBy === 'creation date' ? invoices.sort((a, b) => new Date(a.createdDate) - new Date(b.createdDate)).map(invoice => (
                 <InvoiceDiv invoice={invoice} refreshInvoices={refreshInvoices} key={invoice._id} />
               ))
 
-                // if filter is set to unpaid, display all unpaid invoices
-                : invoices.filter(invoice => !invoice.paid).sort((a, b) => a.number - b.number).map(invoice => (
+                // if filter is set to paid and sortBy is set to number, display all paid invoices sorted by number
+                : filter === 'paid' && sortBy === 'number' ? invoices.filter(invoice => invoice.paid).sort((a, b) => a.number - b.number).map(invoice => (
                   <InvoiceDiv invoice={invoice} refreshInvoices={refreshInvoices} key={invoice._id} />
-                ))}
+                ))
+
+                  // if filter is set to paid and sortBy is set to creation date, display all paid invoices sorted by creation date
+                  : filter === 'paid' && sortBy === 'creation date' ? invoices.filter(invoice => invoice.paid).sort((a, b) => new Date(a.createdDate) - new Date(b.createdDate)).map(invoice => (
+                    <InvoiceDiv invoice={invoice} refreshInvoices={refreshInvoices} key={invoice._id} />
+                  ))
+
+                    // if filter is set to unpaid, display all unpaid invoices
+                    : filter === 'unpaid' && sortBy === 'number' ? invoices.filter(invoice => !invoice.paid).sort((a, b) => a.number - b.number).map(invoice => (
+                      <InvoiceDiv invoice={invoice} refreshInvoices={refreshInvoices} key={invoice._id} />
+                    ))
+
+                      // if filter is set to unpaid and sortBy is set to creation date, display all unpaid invoices sorted by creation date
+                      : invoices.filter(invoice => !invoice.paid).sort((a, b) => new Date(a.createdDate) - new Date(b.createdDate)).map(invoice => (
+                        <InvoiceDiv invoice={invoice} refreshInvoices={refreshInvoices} key={invoice._id} />
+                      ))
+          }
         </div>
 
         <br></br><br></br>

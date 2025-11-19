@@ -3,7 +3,6 @@ import { deleteInvoice, getInvoices, updateInvoice } from '../api'
 import { AuthContext } from '../contexts/AuthContext'
 import { UserContext } from '../contexts/UserContext'
 import { useContext } from 'react'
-import { useNavigate } from 'react-router-dom'
 import '../App.css'
 
 function InvoiceDiv(invoice) {
@@ -18,7 +17,7 @@ function InvoiceDiv(invoice) {
     useEffect(() => {
         setThisInvoice(invoice.invoice)
     }, [invoice])
-    
+
     function sendInvoiceUpdate(invoiceToUpdate) {
         return updateInvoice({ auth, invoice: invoiceToUpdate })
             .then(() => {
@@ -153,24 +152,26 @@ function InvoiceDiv(invoice) {
                 }}
             />
             <br></br>
-            {thisInvoice.createdDate ? `${new Date(thisInvoice.createdDate).toLocaleString().split(',')[0]}` : ''}
+            {thisInvoice.createdDate ? `Created on ${new Date(thisInvoice.createdDate).toLocaleString().split(',')[0]}` : ''}
+            <br></br>
+            {thisInvoice.paidDate ? `Paid on ${new Date(thisInvoice.paidDate).toLocaleString().split(',')[0]}` : 'Unpaid'}
             <br></br>
             <button onClick={() => {
                 if (confirm('Are you sure you want to update this invoice payment status?')) {
                     sendInvoiceUpdate({ _id: thisInvoice._id, paid: !thisInvoice.paid })
-                    .then(() => {
-                        if (invoice.refreshInvoices) {
-                            invoice.refreshInvoices()
-                        } else {
-                            getInvoices({ auth, user: currentUser._id })
-                                .then((response) => {
-                                    setInvoices(response.data.invoices)
-                                })
-                        }
-                    })
-                    .catch(() => {
-                        alert('Error updating invoice payment status')
-                    })
+                        .then(() => {
+                            if (invoice.refreshInvoices) {
+                                invoice.refreshInvoices()
+                            } else {
+                                getInvoices({ auth, user: currentUser._id })
+                                    .then((response) => {
+                                        setInvoices(response.data.invoices)
+                                    })
+                            }
+                        })
+                        .catch(() => {
+                            alert('Error updating invoice payment status')
+                        })
                 }
             }}>
                 {thisInvoice.paid ? 'Mark as Unpaid' : 'Mark as Paid'}
