@@ -1,28 +1,45 @@
+# Apply a consistent box model and prevent unexpected width overflows
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
 #root {
   max-width: 1280px;
+  width: 100%;
   margin: 0 auto;
-  padding: 2rem;
+  padding: clamp(0.5rem, 2vw, 2rem);
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .app {
   background-color: white;
+  width: 100%;
+  max-width: 100%;
   overflow-y: auto;
+  overflow-x: hidden;
   border: 2px solid black;
 }
 
 .app-body {
   background-color: rgb(230, 230, 230);
-  padding: 10px;
+  padding: clamp(8px, 2vw, 16px);
 }
 
 .app-header {
-  height: 4vh;
+  /* use padding instead of fixed height for better responsiveness */
+  min-height: 40px;
   background-color: rgb(0, 150, 0);
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+  padding: 6px clamp(8px, 2vw, 16px);
   text-align: right;
-  padding-right: 10px;
-  padding-top: 5px;
-  font-size: 1.2rem;
+  font-size: clamp(1rem, 2.5vw, 1.2rem);
 }
 
 .invoices {
@@ -32,18 +49,19 @@
   justify-items: center;
   align-items: center;
   width: 100%;
-  height: 100%;
-  padding: 10px;
+  padding: clamp(8px, 2vw, 16px);
   box-sizing: border-box;
   overflow-y: auto;
   overflow-x: hidden;
+  max-height: 400px;
 }
 
 .invoice-cell {
   border: 1px solid black;
   border-radius: 10px;
-  padding:5px;
-  width: fit-content;
+  padding: 5px;
+  width: 100%;
+  max-width: fit-content;
   /* center the invoice-cell */
   margin: 0 auto;
   background-color: rgb(250, 250, 250);
@@ -72,8 +90,24 @@
 }
 
 #payment-record {
-  padding: 10px;
+  padding: clamp(8px, 2vw, 16px);
   margin: 0 auto;
-  background-color: rgb(230, 230, 230);
-  border-top: 1px solid black;
+  background-color: rgb(240, 240, 240);
+  border-top: 2px solid black;
+}
+
+/* Responsive tweaks */
+@media (max-width: 768px) {
+  .invoices {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  .invoices {
+    grid-template-columns: 1fr;
+  }
+  .invoice-cell input {
+    width: 80px;
+  }
 }
