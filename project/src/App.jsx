@@ -316,7 +316,7 @@ function App() {
       </div>
 
       {/* payment record section */}
-      <div id='payment record'>
+      <div id='payment-record'>
 
         <h3>Payment History</h3>
 
