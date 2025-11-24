@@ -38,6 +38,12 @@ function InvoiceDiv(invoice) {
             })
     }
 
+    function displayWithCommas(numstring) {
+        const num = numstring.split('.')
+        const commasAdded = num[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+        return commasAdded + '.' + num[1]
+    }
+
     return (
 
         // invoice cell component
@@ -121,7 +127,7 @@ function InvoiceDiv(invoice) {
 
             &nbsp;&nbsp;
 
-            $
+           $
             {/* input to display and update invoice amount */}
             <input type='text' style={{ width: '100px', textAlign: 'center' }}
                 defaultValue={Number(thisInvoice.amount).toFixed(2)}

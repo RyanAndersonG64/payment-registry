@@ -78,7 +78,6 @@ function App() {
             }
           })
           existingYears.sort((a, b) => b - a)
-          console.log(existingYears)
           setYears(existingYears)
 
         })
@@ -116,7 +115,11 @@ function App() {
     setDates(paidDates)
   }, [invoices])
 
-
+  function displayWithCommas(numstring) {
+        const num = String(numstring).split('.')
+        const commasAdded = num[0].replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+        return commasAdded + '.' + num[1]
+    }
 
   return (
     <div className='app'>
@@ -156,7 +159,7 @@ function App() {
             All
           </option>
           {years.map(year => (
-            <option value={year}>
+            <option key={year} value={year}>
               {year}
             </option>
           ))}
@@ -344,11 +347,11 @@ function App() {
         ))}
 
         <h4>
-          Total Amount Paid: ${invoices.filter(invoice => invoice.paid).reduce((acc, invoice) => acc + invoice.amount, 0).toFixed(2)}
+          Total Amount Paid: ${displayWithCommas(invoices.filter(invoice => invoice.paid).reduce((acc, invoice) => acc + invoice.amount, 0).toFixed(2))}
         </h4>
         <h4>
           {/* sum of all invoices that are not paid */}
-          Total Amount Due: ${invoices.filter(invoice => !invoice.paid).reduce((acc, invoice) => acc + invoice.amount, 0).toFixed(2)}
+          Total Amount Due: ${displayWithCommas(invoices.filter(invoice => !invoice.paid).reduce((acc, invoice) => acc + invoice.amount, 0).toFixed(2))}
         </h4>
       </div>
 
