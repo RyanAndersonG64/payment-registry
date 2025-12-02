@@ -1,4 +1,4 @@
-# Apply a consistent box model and prevent unexpected width overflows
+/* Apply a consistent box model and prevent unexpected width overflows */
 *, *::before, *::after {
   box-sizing: border-box;
 }
