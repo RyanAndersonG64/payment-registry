@@ -40,6 +40,14 @@ app.use(cookieParser())
 app.get('/api/health', (req, res) => {
 	res.json({ status: 'ok' })
 })
+app.get('/api/health/db', (req, res) => {
+	const conn = mongoose.connection
+	res.json({
+		readyState: conn.readyState, // 0=disconnected, 1=connected, 2=connecting, 3=disconnecting
+		dbName: conn.name,
+		host: conn.host,
+	})
+})
 app.use('/api/users', require('./routes/users'))
 app.use('/api/invoices', require('./routes/invoices'))
 app.use('/api/auth', require('./routes/auth'))
