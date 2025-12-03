@@ -20,7 +20,7 @@ router.post('/', async (req, res) => {
 router.get('/', async (req, res) => {
     try {
         const invoices = await Invoice.find({ user: req.query.user })
-        res.json({ invoices })
+        res.json(invoices)
     } catch (error) {
         res.status(500).json({ error: error.message })
     }
