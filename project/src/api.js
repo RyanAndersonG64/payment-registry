@@ -1,6 +1,6 @@
 import axios from 'axios'
 // project/src/api.js
-const baseUrl = import.meta.env.VITE_API_URL ?? '/api'
+const baseUrl = '/api'
 axios.defaults.withCredentials = true
 
 // User/Auth API
