@@ -1,6 +1,6 @@
 import axios from 'axios'
 // project/src/api.js
-const baseUrl = '/api'
+const baseUrl = import.meta.env.VITE_API_URL ?? '/api'
 axios.defaults.withCredentials = true
 
 // User/Auth API
@@ -26,7 +26,7 @@ export const createUser = ({ name, password }) => {
 export const changePassword = ({ name, password }) => {
   return axios({
     method: 'post',
-    url: `${baseUrl}/auth/change-password/`,
+    url: `${baseUrl}/auth/change-password`,
     data: {
       name,
       password,
@@ -41,7 +41,7 @@ export const changePassword = ({ name, password }) => {
 export const getUser = ({ userContext }) => {
   return axios({
     method: 'get',
-    url: `${baseUrl}/auth/me/`,
+    url: `${baseUrl}/auth/me`,
   }).then(response => {
     return response
   }).catch(error => console.log('ERROR: ', error))
@@ -50,7 +50,7 @@ export const getUser = ({ userContext }) => {
 export const getToken = ({ auth, userContext, name, password }) => {
   return axios({
     method: 'post',
-    url: `${baseUrl}/auth/login/`,
+    url: `${baseUrl}/auth/login`,
     data: {
       name,
       password,
@@ -67,7 +67,7 @@ export const getToken = ({ auth, userContext, name, password }) => {
 export const logout = ({ userContext }) => {
   return axios({
     method: 'post',
-    url: `${baseUrl}/auth/logout/`,
+    url: `${baseUrl}/auth/logout`,
   })
     .then(response => {
 
@@ -83,7 +83,7 @@ export const logout = ({ userContext }) => {
 export const createInvoice = ({ auth, invoice }) => {
   return axios({
     method: 'post',
-    url: `${baseUrl}/invoices/`,
+    url: `${baseUrl}/invoices`,
     data: {
       invoice: {
         user: invoice.user,
@@ -102,7 +102,7 @@ export const createInvoice = ({ auth, invoice }) => {
 export const getInvoices = ({ auth, user }) => {
   return axios({
     method: 'get',
-    url: `${baseUrl}/invoices/`,
+    url: `${baseUrl}/invoices`,
     params: {
       user,
     }
