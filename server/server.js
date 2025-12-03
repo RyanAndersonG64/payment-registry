@@ -7,9 +7,6 @@ const dotenv = require('dotenv')
 const cors = require('cors')
 const cookieParser = require('cookie-parser')
 
-// Models
-const User = require('./models/User')
-const Invoice = require('./models/Invoice')
 
 const app = express()
 app.set('trust proxy', 1)
